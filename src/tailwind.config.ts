@@ -25,11 +25,11 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
-					foreground: 'hsl(var(--primary-foreground))',
-					hover: 'hsl(var(--primary-hover))'
-				},
+    DEFAULT: 'hsl(var(--primary))',
+    foreground: 'hsl(var(--primary-foreground))', // Corrected with comma
+    hover: 'hsl(var(--primary-hover))'
+},
+
 				receipt: {
 					bg: 'hsl(var(--receipt-bg))',
 					text: 'hsl(var(--receipt-text))',
