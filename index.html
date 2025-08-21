@@ -156,7 +156,7 @@
         z-index: 2;
       }
       .receipt-header img {
-        height: 40px;
+        height: 220px; /* Logo height increased */
         width: auto;
       }
       .receipt-header h3 {
@@ -281,7 +281,7 @@
 
             <div class="form-group">
               <label for="dateTime">Date and Time</label>
-              <input id="dateTime" type="datetime-local" />
+              <input id="dateTime" type="text" placeholder="YYYY-MM-DD HH:mm:ss" />
             </div>
 
             <div class="btn-container">
@@ -318,6 +318,7 @@
           year: "numeric",
           hour: "numeric",
           minute: "numeric",
+          second: "numeric",
           hour12: true,
         });
       };
@@ -336,7 +337,7 @@
           <div id="receipt-container" class="receipt-preview">
             <div class="watermark">OPay</div>
             <div class="receipt-header">
-              <img src="opay-logo.png" alt="OPay Logo" />
+              <img src="https://i.ibb.co/L5hY63s/opay-logo.png" alt="OPay Logo" />
               <h3>Transaction Receipt</h3>
             </div>
             <div class="receipt-amount-section">
@@ -381,7 +382,7 @@
         `;
       };
 
-      // Set the default date/time to the current local time
+      // Set the default date/time to the current local time with seconds
       document.addEventListener("DOMContentLoaded", () => {
         const now = new Date();
         const year = now.getFullYear();
@@ -389,7 +390,8 @@
         const day = now.getDate().toString().padStart(2, '0');
         const hours = now.getHours().toString().padStart(2, '0');
         const minutes = now.getMinutes().toString().padStart(2, '0');
-        document.getElementById('dateTime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        const seconds = now.getSeconds().toString().padStart(2, '0');
+        document.getElementById('dateTime').value = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
       });
 
       // Event listeners for buttons
