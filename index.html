@@ -126,6 +126,35 @@
       .btn.outline:hover {
         background-color: var(--muted);
       }
+
+      .receipt-preview::before {
+  content: "OPay OPay OPay OPay OPay OPay";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding-top: 50%;
+  font-size: 80px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.02);
+  transform: rotate(-15deg);
+  pointer-events: none;
+  z-index: 1;
+  white-space: nowrap;
+  line-height: 1;
+  overflow: hidden;
+  background-image: repeating-linear-gradient(
+    -15deg,
+    transparent 0,
+    transparent 20%,
+    rgba(0, 0, 0, 0.02) 20%,
+    rgba(0, 0, 0, 0.02) 25%
+  );
+  background-size: 100% 120px;
+  background-position: center;
+}
+
       .receipt-preview {
         padding: 2rem;
         background-color: var(--receipt-bg);
@@ -135,18 +164,15 @@
         position: relative;
         overflow: hidden;
       }
-      .watermark {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) rotate(-15deg);
-        font-size: 80px;
-        font-weight: 700;
-        color: rgba(0, 0, 0, 0.02);
-        user-select: none;
-        pointer-events: none;
-        z-index: 1;
-      }
+
+      
+      .receipt-preview {
+  /* other styles... */
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><text x="10%" y="40%" transform="rotate(-15)" style="font-family: sans-serif; font-weight: 700; font-size: 80px; fill: rgba(0,0,0,0.02);">OPay</text></svg>');
+  background-repeat: repeat;
+  background-size: 300px 300px;
+}
+}
       .receipt-header {
         display: flex;
         justify-content: space-between;
@@ -156,7 +182,7 @@
         z-index: 2;
       }
       .receipt-header img {
-        height: 220px; /* Logo height increased */
+        height: 170px; /* Logo height increased */
         width: auto;
       }
       .receipt-header h3 {
@@ -335,7 +361,7 @@
       const generateReceiptHtml = (data) => {
         return `
           <div id="receipt-container" class="receipt-preview">
-            <div class="watermark">OPay</div>
+            
             <div class="receipt-header">
               <img src="opay-logo.png" alt="OPay Logo" />
               <h3>Transaction Receipt</h3>
