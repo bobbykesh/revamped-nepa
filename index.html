@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OPay Receipt Generator - Professional Transaction Receipts</title>
+    <meta name="description" content="Generate professional OPay transaction receipts with custom details. Perfect for electricity bill payments and other transactions." />
+    <style>
+      :root {
+        --background: #f8fafc;
+        --foreground: #111827;
+        --card-bg: #ffffff;
+        --primary: #00b14f;
+        --primary-hover: #009845;
+        --muted: #e2e8f0;
+        --muted-foreground: #6b7280;
+        --border-color: #e5e7eb;
+        --receipt-bg: #ffffff;
+        --receipt-text: #111827;
+        --receipt-muted: #6b7280;
+        --receipt-amount: #00b14f;
+      }
+      body {
+        font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+        background-color: var(--background);
+        color: var(--foreground);
+        padding: 1.5rem;
+      }
+      .container {
+        max-width: 1280px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .header h1 {
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .header p {
+        color: var(--muted-foreground);
+      }
+      .grid-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        align-items: flex-start;
+      }
+      @media (min-width: 1024px) {
+        .grid-container {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      .card {
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        padding: 1.5rem;
+      }
+      .card-header h2 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 1.5rem;
+      }
+      .form-group label {
+        font-size: 0.875rem;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+      }
+      .form-group input, .form-group textarea {
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        background-color: var(--muted);
+        color: var(--foreground);
+      }
+      .form-group input:focus, .form-group textarea:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+      .form-group textarea {
+        min-height: 80px;
+        resize: vertical;
+      }
+      .btn-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      @media (min-width: 640px) {
+        .btn-container {
+          flex-direction: row;
+        }
+      }
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: 1px solid transparent;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        text-align: center;
+        width: 100%;
+      }
+      .btn.primary {
+        background-color: var(--primary);
+        color: white;
+      }
+      .btn.primary:hover {
+        background-color: var(--primary-hover);
+      }
+      .btn.outline {
+        background-color: transparent;
+        border-color: var(--border-color);
+        color: var(--foreground);
+      }
+      .btn.outline:hover {
+        background-color: var(--muted);
+      }
+      .receipt-preview {
+        padding: 2rem;
+        background-color: var(--receipt-bg);
+        border-radius: 0.75rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        min-height: 600px;
+        position: relative;
+        overflow: hidden;
+      }
+      .watermark {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) rotate(-15deg);
+        font-size: 80px;
+        font-weight: 700;
+        color: rgba(0, 0, 0, 0.02);
+        user-select: none;
+        pointer-events: none;
+        z-index: 1;
+      }
+      .receipt-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 2;
+      }
+      .receipt-header img {
+        height: 40px;
+        width: auto;
+      }
+      .receipt-header h3 {
+        color: var(--receipt-text);
+        font-weight: 700;
+        font-size: 1.125rem;
+      }
+      .receipt-amount-section {
+        text-align: center;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 2;
+      }
+      .receipt-amount {
+        color: var(--receipt-amount);
+        font-size: 2.25rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+      .receipt-status {
+        color: var(--receipt-text);
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+      }
+      .receipt-datetime {
+        color: var(--receipt-muted);
+        font-size: 0.875rem;
+      }
+      .divider {
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 2;
+      }
+      .details-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        position: relative;
+        z-index: 2;
+      }
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid rgba(229, 231, 235, 0.3);
+      }
+      .detail-label {
+        color: var(--receipt-muted);
+        font-size: 0.875rem;
+      }
+      .detail-value {
+        color: var(--receipt-text);
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-align: right;
+        word-break: break-word;
+        max-width: 60%;
+      }
+      .receipt-footer {
+        color: var(--receipt-muted);
+        font-size: 0.75rem;
+        line-height: 1.5;
+        text-align: center;
+        position: relative;
+        z-index: 2;
+      }
+      .decorative-border {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: repeating-linear-gradient(90deg, #ccc 0, #ccc 2px, transparent 2px, transparent 4px);
+      }
+      .placeholder-card {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 384px;
+        text-align: center;
+        color: var(--muted-foreground);
+      }
+      .placeholder-card p {
+        font-size: 1.125rem;
+        margin-bottom: 0.5rem;
+      }
+      .placeholder-card .text-sm {
+        font-size: 0.875rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>OPay Receipt Generator</h1>
+        <p>Generate professional OPay transaction receipts</p>
+      </div>
+
+      <div class="grid-container">
+        <div class="card">
+          <div class="card-header">
+            <h2>Receipt Details</h2>
+          </div>
+          <div class="card-content">
+            <div class="form-group">
+              <label for="amount">Amount (₦)</label>
+              <input id="amount" type="number" step="0.01" value="1000.00" />
+            </div>
+
+            <div class="form-group">
+              <label for="customerName">Customer Name</label>
+              <input id="customerName" value="TETEDE ABIODUN" />
+            </div>
+
+            <div class="form-group">
+              <label for="serviceAddress">Service Address</label>
+              <textarea id="serviceAddress">1004 AREA, ILARO ILAROSANGO OGUN</textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="dateTime">Date and Time</label>
+              <input id="dateTime" type="datetime-local" />
+            </div>
+
+            <div class="btn-container">
+              <button id="generateBtn" class="btn primary">Generate Receipt</button>
+              <button id="downloadBtn" class="btn outline" style="display: none;">Download Image</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="receipt-preview-container" class="flex justify-center">
+          <div class="card placeholder-card">
+            <div class="text-center">
+              <p>No receipt generated</p>
+              <p class="text-sm">Fill the form and generate a receipt to see the preview</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+      // Function to generate a random number of a specific length
+      const generateRandomNumber = (length) => {
+        return Array.from({ length }, () => Math.floor(Math.random() * 10)).join("");
+      };
+
+      // Function to format the date and time string
+      const formatDateTime = (dateTimeString) => {
+        const date = new Date(dateTimeString);
+        return date.toLocaleString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          hour12: true,
+        });
+      };
+
+      // Function to format the amount with currency symbol
+      const formatAmount = (amount) => {
+        return `₦${parseFloat(amount).toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`;
+      };
+
+      // Function to generate the receipt HTML
+      const generateReceiptHtml = (data) => {
+        return `
+          <div id="receipt-container" class="receipt-preview">
+            <div class="watermark">OPay</div>
+            <div class="receipt-header">
+              <img src="https://i.ibb.co/L5hY63s/opay-logo.png" alt="OPay Logo" />
+              <h3>Transaction Receipt</h3>
+            </div>
+            <div class="receipt-amount-section">
+              <div class="receipt-amount">${formatAmount(data.amount)}</div>
+              <div class="receipt-status">Successful</div>
+              <div class="receipt-datetime">${formatDateTime(data.dateTime)}</div>
+            </div>
+            <div class="divider"></div>
+            <div class="details-section">
+              <div class="detail-row">
+                <span class="detail-label">Provider</span>
+                <span class="detail-value">Ibadan Electricity</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Meter Number</span>
+                <span class="detail-value">${data.meterNumber}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Customer Name</span>
+                <span class="detail-value">${data.customerName}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Service Address</span>
+                <span class="detail-value">${data.serviceAddress}</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Meter Type</span>
+                <span class="detail-value">Prepaid</span>
+              </div>
+              <div class="detail-row">
+                <span class="detail-label">Transaction No.</span>
+                <span class="detail-value" style="word-break: break-all;">${data.transactionNo}</span>
+              </div>
+            </div>
+            <div class="receipt-footer">
+              Enjoy a better life with OPay. Get free transfers, withdrawals, bill
+              payments, instant loans, and good annual interest on your savings. OPay
+              is licensed by the Central Bank of Nigeria and insured by the NDIC.
+            </div>
+            <div class="decorative-border"></div>
+          </div>
+        `;
+      };
+
+      // Set the default date/time to the current local time
+      document.addEventListener("DOMContentLoaded", () => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = (now.getMonth() + 1).toString().padStart(2, '0');
+        const day = now.getDate().toString().padStart(2, '0');
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        document.getElementById('dateTime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+      });
+
+      // Event listeners for buttons
+      document.getElementById("generateBtn").addEventListener("click", () => {
+        const amount = document.getElementById("amount").value;
+        const customerName = document.getElementById("customerName").value.toUpperCase();
+        const serviceAddress = document.getElementById("serviceAddress").value.toUpperCase();
+        const dateTime = document.getElementById("dateTime").value;
+
+        const receiptData = {
+          amount: parseFloat(amount),
+          customerName: customerName,
+          serviceAddress: serviceAddress,
+          dateTime: dateTime,
+          meterNumber: generateRandomNumber(11),
+          transactionNo: generateRandomNumber(28),
+        };
+
+        const previewContainer = document.getElementById("receipt-preview-container");
+        previewContainer.innerHTML = generateReceiptHtml(receiptData);
+        document.getElementById("downloadBtn").style.display = "block";
+      });
+
+      document.getElementById("downloadBtn").addEventListener("click", () => {
+        const element = document.getElementById("receipt-container");
+        html2canvas(element, {
+          scale: 2,
+          backgroundColor: "#ffffff",
+        }).then(canvas => {
+          const link = document.createElement("a");
+          link.download = "opay_receipt.png";
+          link.href = canvas.toDataURL("image/png");
+          link.click();
+        });
+      });
+    </script>
+  </body>
+</html>
