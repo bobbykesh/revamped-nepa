@@ -156,7 +156,7 @@
         z-index: 2;
       }
       .receipt-header img {
-        height: 60px; /* Logo height increased */
+        height: 100px; /* Logo height increased */
         width: auto;
       }
       .receipt-header h3 {
@@ -281,7 +281,7 @@
 
             <div class="form-group">
               <label for="dateTime">Date and Time</label>
-              <input id="dateTime" type="text" placeholder="YYYY-MM-DD HH:mm:ss" />
+              <input id="dateTime" type="datetime-local" step="1" />
             </div>
 
             <div class="btn-container">
@@ -316,11 +316,11 @@
           month: "short",
           day: "numeric",
           year: "numeric",
-          hour: "numeric",
-          minute: "numeric",
-          second: "numeric",
-          hour12: true,
-        });
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        }).replace(/,/, ''); // Remove the comma after the year
       };
 
       // Function to format the amount with currency symbol
